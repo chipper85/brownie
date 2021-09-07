@@ -94,7 +94,7 @@ class Rpc(metaclass=_Singleton):
         self.kill(False)
         raise RPCConnectionError(cmd, self.process, uri)
 
-    def attach(self, laddr: Union[str, Tuple]) -> None:
+    def attach(self, laddr: Union[str, Tuple], pid_in) -> None:
         """Attaches to an already running RPC client subprocess.
 
         Args:
@@ -110,7 +110,12 @@ class Rpc(metaclass=_Singleton):
 
         ip = socket.gethostbyname(laddr[0])
         resolved_addr = (ip, laddr[1])
-        pid = self._find_rpc_process_pid(resolved_addr)
+        print(f"find_rpc_process_pid '{laddr[0]}:{laddr[1]}'...")
+        
+        if(pid_in):
+            pid = pid_in
+        else:
+            pid = self._find_rpc_process_pid(resolved_addr)
 
         print(f"Attached to local RPC client listening at '{laddr[0]}:{laddr[1]}'...")
         self.process = psutil.Process(pid)
@@ -196,6 +201,7 @@ class Rpc(metaclass=_Singleton):
 
     def _check_proc_connections(self, proc: psutil.Process, laddr: Tuple) -> bool:
         try:
+            print(f"proc.connections: {proc.connections()}")
             return laddr in [i.laddr for i in proc.connections()]
         except psutil.AccessDenied:
             return False
@@ -215,6 +221,8 @@ class Rpc(metaclass=_Singleton):
             return False
 
     def _get_pid_from_connections(self, laddr: Tuple) -> int:
+        for proc in psutil.process_iter():
+            print(proc)
         try:
             proc = next(i for i in psutil.process_iter() if self._check_proc_connections(i, laddr))
             return self._get_proc_pid(proc)
@@ -224,6 +232,9 @@ class Rpc(metaclass=_Singleton):
             ) from None
 
     def _get_pid_from_net_connections(self, laddr: Tuple) -> int:
+        
+        for conn in psutil.net_connections(kind="inet"):
+            print(f"net_connections: {conn}")
         try:
             proc = next(
                 i

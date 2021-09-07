@@ -1878,15 +1878,16 @@ def _fetch_from_explorer(address: str, action: str, silent: bool) -> Dict:
 
     params: Dict = {"module": "contract", "action": action, "address": address}
     if "etherscan" in url:
-        if os.getenv("ETHERSCAN_TOKEN"):
-            params["apiKey"] = os.getenv("ETHERSCAN_TOKEN")
-        elif not silent:
-            warnings.warn(
-                "No Etherscan API token set. You may experience issues with rate limiting. "
-                "Visit https://etherscan.io/register to obtain a token, and then store it "
-                "as the environment variable $ETHERSCAN_TOKEN",
-                BrownieEnvironmentWarning,
-            )
+        params["apiKey"] = "TH5GE5Q79GWDD8FVVN5H92QNAHKTW8CXV8"
+        #if os.getenv("ETHERSCAN_TOKEN"):
+        #    params["apiKey"] = os.getenv("ETHERSCAN_TOKEN")
+        #elif not silent:
+        #    warnings.warn(
+        #        "No Etherscan API token set. You may experience issues with rate limiting. "
+        #        "Visit https://etherscan.io/register to obtain a token, and then store it "
+        #        "as the environment variable $ETHERSCAN_TOKEN",
+        #        BrownieEnvironmentWarning,
+        #    )
     elif "bscscan" in url:
         if os.getenv("BSCSCAN_TOKEN"):
             params["apiKey"] = os.getenv("BSCSCAN_TOKEN")

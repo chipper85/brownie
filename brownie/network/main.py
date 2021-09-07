@@ -36,7 +36,7 @@ def connect(network: str = None, launch_rpc: bool = True) -> None:
                 host += f":{active['cmd_settings']['port']}"
             except KeyError:
                 pass
-
+        
         web3.connect(host, active.get("timeout", 30))
         if CONFIG.network_type == "development" and launch_rpc and not rpc.is_active():
             if is_connected():
@@ -45,9 +45,13 @@ def connect(network: str = None, launch_rpc: bool = True) -> None:
                         f"Development network has a block height of {web3.eth.block_number}",
                         BrownieEnvironmentWarning,
                     )
-                rpc.attach(host)
+                rpc.attach(host, CONFIG.networks[network]["pid"])
             else:
-                rpc.launch(active["cmd"], **active["cmd_settings"])
+                # Try and attach anyway if we have a PID
+                if(CONFIG.networks[network]["pid"]):
+                    rpc.attach(host, CONFIG.networks[network]["pid"])
+                else:
+                    rpc.launch(active["cmd"], **active["cmd_settings"])
         else:
             Accounts()._reset()
         if CONFIG.network_type == "live" or CONFIG.settings["dev_deployment_artifacts"]:

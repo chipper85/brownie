@@ -76,6 +76,12 @@ def pytest_addoption(parser):
             help=f"Override the network port via command line)",
         )
         parser.addoption(
+            "--processID",
+            default=None,
+            action="store",
+            help="processID hack",
+        )
+        parser.addoption(
             "--showinternal",
             action="store_true",
             help="Include Brownie internal frames in tracebacks",
