@@ -619,6 +619,7 @@ class _PrivateKeyAccount(PublicKeyAccount):
         required_confs: int = 1,
         allow_revert: bool = None,
         silent: bool = None,
+        suppress_revert: bool = False,
     ) -> TransactionReceipt:
         """
         Broadcast a transaction from this account.
@@ -676,8 +677,8 @@ class _PrivateKeyAccount(PublicKeyAccount):
                 daemon=True,
             )
             undo_thread.start()
-
-        receipt._raise_if_reverted(exc)
+        if suppress_revert is not True:
+            receipt._raise_if_reverted(exc)
         return receipt
 
     def _make_transaction(

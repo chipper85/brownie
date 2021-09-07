@@ -756,7 +756,7 @@ class _DeployedContractBase(_ContractBase):
         self.bytecode = web3.eth.get_code(address).hex()[2:]
         if not self.bytecode:
             raise ContractNotFound(f"No contract deployed at {address}")
-        self._owner = owner
+        self._blah_owner = owner
         self.tx = tx
         self.address = address
         _add_deployment_topics(address, self.abi)
@@ -1296,12 +1296,12 @@ class OverloadedMethod:
     def __init__(self, address: str, name: str, owner: Optional[AccountsType]):
         self._address = address
         self._name = name
-        self._owner = owner
+        self._blah_owner = owner
         self.methods: Dict = {}
         self.natspec: Dict = {}
 
     def _add_fn(self, abi: Dict, natspec: Dict) -> None:
-        fn = _get_method_object(self._address, abi, self._name, self._owner, natspec)
+        fn = _get_method_object(self._address, abi, self._name, self._blah_owner, natspec)
         key = tuple(i["type"].replace("256", "") for i in abi["inputs"])
         self.methods[key] = fn
         self.natspec.update(natspec)
@@ -1472,7 +1472,7 @@ class _ContractMethod:
         self._address = address
         self._name = name
         self.abi = abi
-        self._owner = owner
+        self._blah_owner = owner
         self.signature = build_function_selector(abi)
         self._input_sig = build_function_signature(abi)
         self.natspec = natspec or {}
@@ -1521,7 +1521,7 @@ class _ContractMethod:
             Contract method return value(s).
         """
 
-        args, tx = _get_tx(self._owner, args)
+        args, tx = _get_tx(self._blah_owner, args)
         if tx["from"]:
             tx["from"] = str(tx["from"])
         del tx["required_confs"]
@@ -1556,7 +1556,7 @@ class _ContractMethod:
             Object representing the broadcasted transaction.
         """
 
-        args, tx = _get_tx(self._owner, args)
+        args, tx = _get_tx(self._blah_owner, args)
         if not tx["from"]:
             raise AttributeError(
                 "Final argument must be a dict of transaction parameters that "
@@ -1575,6 +1575,7 @@ class _ContractMethod:
             required_confs=tx["required_confs"],
             data=self.encode_input(*args),
             allow_revert=tx["allow_revert"],
+            suppress_revert=tx["suppress_revert"],
         )
 
     def decode_input(self, hexstr: str) -> List:
@@ -1648,7 +1649,7 @@ class _ContractMethod:
         int
             Estimated gas value in wei.
         """
-        args, tx = _get_tx(self._owner, args)
+        args, tx = _get_tx(self._blah_owner, args)
         if not tx["from"]:
             raise AttributeError(
                 "Final argument must be a dict of transaction parameters that "
@@ -1728,8 +1729,8 @@ class ContractCall(_ContractMethod):
         if not CONFIG.argv["always_transact"] or block_identifier is not None:
             return self.call(*args, block_identifier=block_identifier)
 
-        args, tx = _get_tx(self._owner, args)
-        tx.update({"gas_price": 0, "from": self._owner or accounts[0]})
+        args, tx = _get_tx(self._blah_owner, args)
+        tx.update({"gas_price": 0, "from": self._blah_owner or accounts[0]})
         pc, revert_msg = None, None
 
         try:
@@ -1767,6 +1768,7 @@ def _get_tx(owner: Optional[AccountsType], args: Tuple) -> Tuple:
         "nonce": None,
         "required_confs": 1,
         "allow_revert": None,
+        "suppress_revert": False,
     }
     if args and isinstance(args[-1], dict):
         tx.update(args[-1])

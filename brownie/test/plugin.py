@@ -70,6 +70,12 @@ def pytest_addoption(parser):
             help=f"Use a specific network (default {CONFIG.settings['networks']['default']})",
         )
         parser.addoption(
+            "--portoverride",
+            default=None,
+            action="store",
+            help=f"Override the network port via command line)",
+        )
+        parser.addoption(
             "--showinternal",
             action="store_true",
             help="Include Brownie internal frames in tracebacks",
