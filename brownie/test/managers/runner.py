@@ -157,7 +157,10 @@ class PytestBrownieRunner(PytestBrownieBase):
         if config.getoption("capture") == "no":
             self.printer = PytestPrinter()
 
-        network_id = self.config.getoption("--network")[0] or CONFIG.settings["networks"]["default"]
+        if(self.config.getoption("--network")):
+            network_id = self.config.getoption("--network")[0]
+        else:
+            network_id = CONFIG.settings["networks"]["default"]
         # Tom hack - allow override of port setting if one is defined in options
         if self.config.getoption("--portoverride") is not None:
             CONFIG.networks[network_id]["cmd_settings"]["port"] = int(self.config.getoption("--portoverride"))

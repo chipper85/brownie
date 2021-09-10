@@ -28,6 +28,8 @@ def connect(network: str = None, launch_rpc: bool = True) -> None:
     if is_connected():
         raise ConnectionError(f"Already connected to network '{CONFIG.active_network['id']}'")
     try:
+        if(network is None):
+            network = CONFIG.settings["networks"]["default"]
         active = CONFIG.set_active_network(network)
         host = active["host"]
 
