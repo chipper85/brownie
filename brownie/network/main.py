@@ -42,11 +42,6 @@ def connect(network: str = None, launch_rpc: bool = True) -> None:
         web3.connect(host, active.get("timeout", 30))
         if CONFIG.network_type == "development" and launch_rpc and not rpc.is_active():
             if is_connected():
-                if web3.eth.block_number != 0:
-                    warnings.warn(
-                        f"Development network has a block height of {web3.eth.block_number}",
-                        BrownieEnvironmentWarning,
-                    )
                 rpc.attach(host, CONFIG.networks[network]["pid"])
             else:
                 # Try and attach anyway if we have a PID

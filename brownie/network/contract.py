@@ -1526,17 +1526,28 @@ class _ContractMethod:
             tx["from"] = str(tx["from"])
         del tx["required_confs"]
         tx.update({"to": self._address, "data": self.encode_input(*args)})
+        
+        suppress_revert=tx["suppress_revert"]
 
         try:
             data = web3.eth.call({k: v for k, v in tx.items() if v}, block_identifier)
         except ValueError as e:
-            raise VirtualMachineError(e) from None
-
+            if(suppress_revert is not True):
+                raise VirtualMachineError(e) from None
+            else:
+                pass
         if HexBytes(data)[:4].hex() == "0x08c379a0":
             revert_str = eth_abi.decode_abi(["string"], HexBytes(data)[4:])[0]
-            raise ValueError(f"Call reverted: {revert_str}")
+            
+            if(suppress_revert is not True):
+                raise ValueError(f"Call reverted: {revert_str}")
+            else:
+                print(f"WARNING: Call reverted: {revert_str}") 
         if self.abi["outputs"] and not data:
-            raise ValueError("No data was returned - the call likely reverted")
+            if(suppress_revert is not True):
+                raise ValueError("No data was returned - the call likely reverted")
+            else:
+                print("WARNING: No data was returned - the call likely reverted")
 
         return self.decode_output(data)
 
