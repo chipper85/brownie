@@ -39,7 +39,7 @@ def connect(network: str = None, launch_rpc: bool = True) -> None:
             except KeyError:
                 pass
         
-        web3.connect(host, active.get("timeout", 30))
+        web3.connect(host, active.get("timeout", 60))
         if CONFIG.network_type == "development" and launch_rpc and not rpc.is_active():
             if is_connected():
                 rpc.attach(host, CONFIG.networks[network]["pid"])
