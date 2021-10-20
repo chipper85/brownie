@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/eth-brownie/brownie)
 
+## [1.17.0](https://github.com/eth-brownie/brownie/tree/v1.17.0) - 2021-10-13
+### Added
+- Arguments from the command line can now be passed to brownie scripts. ([#398](https://github.com/eth-brownie/brownie/issues/398))
+- Fix etherscan verification w/ new solidity flattener ([#1283](https://github.com/eth-brownie/brownie/pull/1283))
+- Drop py36 support and add py39 to CI/dev tooling ([#1289](https://github.com/eth-brownie/brownie/pull/1289))
+- Bump dependencies ([#1277](https://github.com/eth-brownie/brownie/pull/1277))
+- Fix missing source in source object, grab from filesystem ([#1290](https://github.com/eth-brownie/brownie/pull/1290))
+- Add harmony mainnet to default network config([#1286](https://github.com/eth-brownie/brownie/pull/1286))
+- Better panic messages for contract calls ([#1275](https://github.com/eth-brownie/brownie/pull/1275))
+
+### Fixed
+- Handle missing `gasPrice` in `eth_getTransaction` ([#1285](https://github.com/eth-brownie/brownie/pull/1285))
+
+## [1.16.4](https://github.com/eth-brownie/brownie/tree/v1.16.4) - 2021-09-21
+### Added
+- Add `only_confirmed` as an optional kwarg for `history.clear` ([#1251](https://github.com/eth-brownie/brownie/pull/1251))
+- Add `.env` to default project gitignore ([#1249](https://github.com/eth-brownie/brownie/pull/1249))
+
+### Changed
+- Allow numbers in project names ([#1254](https://github.com/eth-brownie/brownie/pull/1254))
+
+### Fixed
+- Various Arbitrum related fixes ([#1255](https://github.com/eth-brownie/brownie/pull/1255))
+- Pass solc version when compiling ABI ([#1243](https://github.com/eth-brownie/brownie/pull/1243))
+- Correctly handle Erigon traces ([#1245](https://github.com/eth-brownie/brownie/pull/1245))
+- Replace EIP1559 tx's with the same tx type ([#1250](https://github.com/eth-brownie/brownie/pull/1250))
+
 ## [1.16.3](https://github.com/eth-brownie/brownie/tree/v1.16.3) - 2021-09-04
 ### Added
 - Add API token to verify sources on ftmscan ([#1226](https://github.com/eth-brownie/brownie/pull/1226))
