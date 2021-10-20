@@ -84,8 +84,6 @@ class Accounts(metaclass=_Singleton):
                 account = Account(address)
                 if account not in self._accounts:
                     self._accounts.append(account)
-                if CONFIG.network_type == "development" and address not in web3.eth.accounts:
-                    rpc.unlock_account(address)
         except (ConnectionError, ValueError, KeyError):
             pass
 
@@ -243,10 +241,10 @@ class Accounts(metaclass=_Singleton):
         """
         address = _resolve_address(address)
         acct = next((i for i in self._accounts if i == address), None)
-        print(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BROWNIE at accounts =  {web3.eth.accounts}")
+
         if acct is None and (address in web3.eth.accounts or force):
             acct = Account(address)
-            
+
             if CONFIG.network_type == "development" and address not in web3.eth.accounts:
                 rpc.unlock_account(address)
 

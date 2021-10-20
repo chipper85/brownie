@@ -5,6 +5,7 @@ import threading
 import time
 import weakref
 from hashlib import sha1
+from pathlib import Path
 from sqlite3 import OperationalError
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union
 
@@ -14,7 +15,7 @@ from web3.types import BlockData
 from brownie._config import CONFIG, _get_data_folder
 from brownie._singleton import _Singleton
 from brownie.convert import Wei
-from brownie.exceptions import BrownieEnvironmentError
+from brownie.exceptions import BrownieEnvironmentError, CompilerError
 from brownie.network import rpc
 from brownie.project.build import DEPLOYMENT_KEYS
 from brownie.utils.sql import Cursor
@@ -77,8 +78,19 @@ class TxHistory(metaclass=_Singleton):
         if tx not in self._list:
             self._list.append(tx)
 
-    def clear(self) -> None:
-        self._list.clear()
+    def clear(self, only_confirmed: bool = False) -> None:
+        """
+        Clear the list.
+
+        Arguments
+        ---------
+        only_confirmed : bool, optional
+            If True, transactions which are still marked as pending will not be removed.
+        """
+        if only_confirmed:
+            self._list = [i for i in self._list if i.status == -1]
+        else:
+            self._list.clear()
 
     def copy(self) -> List:
         """Returns a shallow copy of the object as a list"""
@@ -555,7 +567,7 @@ def _find_contract(address: Any) -> Any:
             from brownie.network.contract import Contract
 
             return Contract(address)
-        except ValueError:
+        except (ValueError, CompilerError):
             pass
 
 
@@ -625,6 +637,8 @@ def _add_deployment(contract: Any, alias: Optional[str] = None) -> None:
     all_sources = {}
     for key, path in contract._build.get("allSourcePaths", {}).items():
         source = contract._sources.get(path)
+        if source is None:
+            source = Path(path).read_text()
         hash_ = sha1(source.encode()).hexdigest()
         cur.insert("sources", hash_, source)
         all_sources[key] = [hash_, path]
